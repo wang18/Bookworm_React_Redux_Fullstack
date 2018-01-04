@@ -10,6 +10,7 @@ import thunk from 'redux-thunk';
 import rootReducer from './rootReducer';
 import {composeWithDevTools} from 'redux-devtools-extension';
 import {userLoggedIn} from "./actions/auth";
+import decode from 'jwt-decode';
 
 const store =createStore(
     rootReducer,
@@ -18,7 +19,12 @@ const store =createStore(
 );
 
 if(localStorage.bookwormJWT){
-    const user = {token: localStorage.bookwormJWT};
+    const payload = decode(localStorage.bookwormJWT);
+    const user = {
+        token: localStorage.bookwormJWT,
+        email: payload.email,
+        confirmed: payload.confirmed
+    };
     store.dispatch(userLoggedIn(user));
 }
 
