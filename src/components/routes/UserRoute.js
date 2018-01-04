@@ -4,7 +4,8 @@ import {Route, Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 const UserRoute = ({isAuthenticated, component: Component, ...rest}) =>(
-    <Route className="" {...rest} render={props => isAuthenticated ? <Component {...props}/> : <Redirect to="/"/>} />
+    <Route className="" {...rest} render={props =>
+        isAuthenticated ? <Component {...props}/> : <Redirect to="/"/>} />
 
 );
 
