@@ -8,15 +8,16 @@ import Book from '../models/Book';
 const router = express.Router();
 router.use(authentication);
 
-router.get('/',(req, res)=>{
-    Book.find({userId: req.currentUser._id}).then(books => res.json({books}));
+router.get("/", (req, res) => {
+    Book.find({ userId: req.currentUser._id }).then(books => res.json({ books }));
 });
 
-router.post("/",(req,res)=>{
-    Book.create({...req.body.book, userId: req.currentUser._id})
-        .then(book => res.json({book}))
-        .catch(err => res.status(400).json({errors: parseErrors(err.errors)}));
+router.post("/", (req, res) => {
+    Book.create({ ...req.body.book, userId: req.currentUser._id })
+        .then(book => res.json({ book }))
+        .catch(err => res.status(400).json({ errors: parseErrors(err.errors) }));
 });
+
 router.get('/search',(req,res)=>{
     requset.get(`https://www.goodreads.com/search/index.xml?key=czlBo8eE1lp7Nj5cbIaCrw&q=${req.query.q}`)
         .then(result => parseString(result,(err, goodreadsResult) => res.json({

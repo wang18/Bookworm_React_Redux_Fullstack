@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Form, Button, Grid, Segment, Image} from 'semantic-ui-react';
-import InlineError from '../messages/InlineError';
+import React from "react";
+import PropTypes from "prop-types";
+import { Form, Button, Grid, Segment, Image } from "semantic-ui-react";
+import InlineError from "../messages/InlineError";
 
 class BookForm extends React.Component {
     state = {
@@ -13,9 +13,9 @@ class BookForm extends React.Component {
             pages: this.props.book.pages
         },
         covers: this.props.book.covers,
-        errors: {},
-        loading: false,
         index: 0,
+        loading: false,
+        errors: {}
     };
 
     componentWillReceiveProps(props) {
@@ -31,29 +31,13 @@ class BookForm extends React.Component {
         });
     }
 
-    onSubmit = (e) => {
-        e.preventDefault();
-    };
-
-    onChange = (e) =>
+    onChange = e =>
         this.setState({
             ...this.state,
-            data: {
-                ...this.state.data,
-                [e.target.name]: e.target.value
-            }
+            data: { ...this.state.data, [e.target.name]: e.target.value }
         });
 
-
-    validate = (data) => {
-        const errors = {};
-        if (!data.title) errors.title = "Cant be blank";
-        if (!data.authors) errors.authors = "Cant be blank";
-        if (!data.pages) errors.pages = "Cant be blank";
-        return errors;
-    };
-
-    onChangeNumber = (e) =>
+    onChangeNumber = e =>
         this.setState({
             ...this.state,
             data: {
@@ -62,21 +46,39 @@ class BookForm extends React.Component {
             }
         });
 
+    onSubmit = e => {
+        e.preventDefault();
+        const errors = this.validate(this.state.data);
+        this.setState({ errors });
+        if (Object.keys(errors).length === 0) {
+            this.setState({ loading: true });
+            this.props
+                .submit(this.state.data)
+                .catch(err =>
+                    this.setState({ errors: err.response.data.errors, loading: false })
+                );
+        }
+    };
+
     changeCover = () => {
-        const {index, covers} = this.state;
+        const { index, covers } = this.state;
         const newIndex = index + 1 >= covers.length ? 0 : index + 1;
         this.setState({
-            data: {
-                ...this.state.data,
-                cover: covers[newIndex]
-            },
-            index: newIndex
+            index: newIndex,
+            data: { ...this.state.data, cover: covers[newIndex] }
         });
     };
 
+    validate = data => {
+        const errors = {};
+        if (!data.title) errors.title = "Can't be blank";
+        if (!data.authors) errors.authors = "Can't be blank";
+        if (!data.pages) errors.pages = "Can't be blank";
+        return errors;
+    };
 
     render() {
-        const {errors, data, loading} = this.state;
+        const { errors, data, loading } = this.state;
 
         return (
             <Segment>
@@ -94,7 +96,7 @@ class BookForm extends React.Component {
                                         value={data.title}
                                         onChange={this.onChange}
                                     />
-                                    {errors.title && <InlineError text={errors.title}/>}
+                                    {errors.title && <InlineError text={errors.title} />}
                                 </Form.Field>
 
                                 <Form.Field error={!!errors.authors}>
@@ -107,7 +109,7 @@ class BookForm extends React.Component {
                                         value={data.authors}
                                         onChange={this.onChange}
                                     />
-                                    {errors.authors && <InlineError text={errors.authors}/>}
+                                    {errors.authors && <InlineError text={errors.authors} />}
                                 </Form.Field>
 
                                 <Form.Field error={!!errors.pages}>
@@ -120,12 +122,12 @@ class BookForm extends React.Component {
                                         value={data.pages !== undefined ? data.pages : "Loading..."}
                                         onChange={this.onChangeNumber}
                                     />
-                                    {errors.pages && <InlineError text={errors.pages}/>}
+                                    {errors.pages && <InlineError text={errors.pages} />}
                                 </Form.Field>
                             </Grid.Column>
 
                             <Grid.Column>
-                                <Image size="small" src={data.cover}/>
+                                <Image size="small" src={data.cover} />
                                 {this.state.covers.length > 1 && (
                                     <a role="button" tabIndex={0} onClick={this.changeCover}>
                                         Another cover
@@ -153,6 +155,6 @@ BookForm.propTypes = {
         covers: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
         pages: PropTypes.number
     }).isRequired
-}
+};
 
 export default BookForm;
